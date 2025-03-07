@@ -1,6 +1,7 @@
 import pygame
 from constants import *
-from shapes import Player
+from shapes import *
+from random import randint
 
 def main():
     pygame.init()
@@ -10,8 +11,11 @@ def main():
 
     updateable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    enemies = pygame.sprite.Group()
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS, (updateable, drawable))
+    for enemy in range(10):
+        enemy = Enemy(randint(0, SCREEN_WIDTH), randint(-200, -20), ENEMY_RADIUS, player, (updateable, drawable, enemies))
 
     running = True
 
