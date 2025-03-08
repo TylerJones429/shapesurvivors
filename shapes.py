@@ -1,5 +1,5 @@
 import pygame
-from constants import PLAYER_SPEED, ENEMY_SPEED
+from constants import *
 
 class Shape(pygame.sprite.Sprite):
     def __init__(self, x, y, groups):
@@ -19,6 +19,7 @@ class Player(Shape):
         super().__init__(x, y, groups)
         self.radius = radius
         self.speed = PLAYER_SPEED
+        self.cooldown = PLAYER_SHOT_COOLDOWN
 
     def draw(self, screen):
         pygame.draw.circle(screen, "white", (self.position.x, self.position.y), self.radius, 2)
@@ -56,3 +57,22 @@ class Enemy(Shape):
 
     def update(self, dt):
         self.move(dt)
+
+class Bullet(Shape):
+    def __init__(self, x, y, radius, speed, direction, groups):
+        super().__init__(x, y, groups)
+        self.radius = radius
+        self.speed = speed
+        self.direction = direction
+        
+    def draw(self, screen):
+        pygame.draw.circle(screen, "light blue", self.position, self.radius, 1)
+
+    def move(self, dt):
+        self.position += self.direction * self.speed * dt
+
+    def update(self, dt):
+        if self.position.y < 0 or self.position.y > SCREEN_HEIGHT or self.position.x < 0 or self.position.x > SCREEN_WIDTH:
+            self.kill()
+        else:
+            self.move(dt)
