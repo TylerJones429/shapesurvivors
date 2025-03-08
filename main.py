@@ -8,7 +8,9 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
+    shot_direction = pygame.Vector2(1,0)
     shot_cooldown = PLAYER_SHOT_COOLDOWN
+    distance_to_enemies = {}
 
     updateable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -33,7 +35,15 @@ def main():
 
         shot_cooldown -= 1 * dt
         if shot_cooldown <= 0:
-            bullet = Bullet(player.position.x, player.position.y, BULLET_RADIUS, BULLET_SPEED, pygame.Vector2(1,0), (updateable, drawable, bullets))
+            #find distances to all enemies
+            #fire at location of nearest enemy
+            distance_to_enemies.clear()
+            for enemy in enemies:
+                distance = pygame.Vector2.distance_to(player.position, enemy.position)
+                distance_to_enemies[distance] = enemy.position
+            nearest = min(distance_to_enemies)
+            bullet_direction = (distance_to_enemies[nearest] - player.position).normalize()
+            bullet = Bullet(player.position.x, player.position.y, BULLET_RADIUS, BULLET_SPEED, bullet_direction, (updateable, drawable, bullets))
             shot_cooldown = PLAYER_SHOT_COOLDOWN
 
         screen.fill('black')

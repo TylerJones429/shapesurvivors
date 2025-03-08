@@ -31,8 +31,16 @@ class Player(Shape):
         self.direction = self.direction.normalize() if self.direction else self.direction
 
     def move(self, dt):
-        self.position.x += self.direction.x * self.speed * dt
-        self.position.y += self.direction.y * self.speed * dt
+        self.position += self.direction * self.speed * dt
+        #constrain
+        if self.position.x < 0:
+            self.position.x = 0
+        if self.position.x > SCREEN_WIDTH:
+            self.position.x = SCREEN_WIDTH
+        if self.position.y < 0:
+            self.position.y = 0
+        if self.position.y > SCREEN_HEIGHT:
+            self.position.y = SCREEN_HEIGHT
 
     def update(self, dt):
         self.input()
@@ -63,13 +71,14 @@ class Bullet(Shape):
         super().__init__(x, y, groups)
         self.radius = radius
         self.speed = speed
-        self.direction = direction
+        self.direction = pygame.Vector2(direction)
         
     def draw(self, screen):
         pygame.draw.circle(screen, "light blue", self.position, self.radius, 1)
 
     def move(self, dt):
-        self.position += self.direction * self.speed * dt
+        self.position.x += self.direction.x * self.speed * dt
+        self.position.y += self.direction.y * self.speed * dt
 
     def update(self, dt):
         if self.position.y < 0 or self.position.y > SCREEN_HEIGHT or self.position.x < 0 or self.position.x > SCREEN_WIDTH:
