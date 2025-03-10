@@ -2,10 +2,11 @@ import pygame
 from constants import *
 
 class Shape(pygame.sprite.Sprite):
-    def __init__(self, x, y, groups):
+    def __init__(self, x, y, radius, groups):
         super().__init__(groups)
         self.position = pygame.Vector2(x, y)
         self.direction = pygame.Vector2()
+        self.radius = radius
 
     #dummy methods should get overridden
     def draw(self, screen):
@@ -14,9 +15,18 @@ class Shape(pygame.sprite.Sprite):
     def update(self, dt):
         pass
 
+    def collides(self, Shape):
+        other = Shape
+        distance = pygame.Vector2.distance_to(self.position, other.position)
+        if distance <= self.radius + other.radius:
+            return True
+        else:
+            return False
+        
+
 class Player(Shape):
     def __init__(self, x, y, radius, groups):
-        super().__init__(x, y, groups)
+        super().__init__(x, y, radius, groups)
         self.radius = radius
         self.speed = PLAYER_SPEED
         self.cooldown = PLAYER_SHOT_COOLDOWN
@@ -49,8 +59,7 @@ class Player(Shape):
 
 class Enemy(Shape):
     def __init__(self, x, y, radius, player, groups):
-        super().__init__(x, y, groups)
-        self.radius = radius
+        super().__init__(x, y, radius, groups)
         self.speed = ENEMY_SPEED
         self.player = player
 
@@ -68,8 +77,7 @@ class Enemy(Shape):
 
 class Bullet(Shape):
     def __init__(self, x, y, radius, speed, direction, groups):
-        super().__init__(x, y, groups)
-        self.radius = radius
+        super().__init__(x, y, radius, groups)
         self.speed = speed
         self.direction = pygame.Vector2(direction)
         
@@ -81,7 +89,8 @@ class Bullet(Shape):
         self.position.y += self.direction.y * self.speed * dt
 
     def update(self, dt):
+        #destroy if offscreen
         if self.position.y < 0 or self.position.y > SCREEN_HEIGHT or self.position.x < 0 or self.position.x > SCREEN_WIDTH:
             self.kill()
-        else:
-            self.move(dt)
+
+        self.move(dt)
