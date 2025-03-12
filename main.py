@@ -10,7 +10,7 @@ dt = 0
 shot_direction = pygame.Vector2(1,0)
 shot_cooldown = PLAYER_SHOT_COOLDOWN
 enemy_waves = 6
-wave_timer = ENEMY_WAVE_TIMER
+wave_timer = 0
 distance_to_enemies = {}
 
 font = pygame.font.Font(None, 60)
@@ -27,9 +27,9 @@ enemies = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 
 player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS, (updateable, drawable))
-for enemy in range(10):
-    enemy = Enemy(randint(0, SCREEN_WIDTH), randint(-200, -20), ENEMY_RADIUS, player, (updateable, drawable, enemies))
-enemy_waves -= 1
+# for enemy in range(10):
+#     enemy = Enemy(randint(0, SCREEN_WIDTH), randint(-200, -20), ENEMY_RADIUS, player, (updateable, drawable, enemies))
+# enemy_waves -= 1
 
 running = True
 #game loop
@@ -41,12 +41,13 @@ while running:
     for obj in updateable:
         obj.update(dt)
 
+    #spawn enemies
     if enemy_waves > 0:
         wave_timer -= dt
         if wave_timer <= 0:
             enemy_waves -= 1
             wave_timer = ENEMY_WAVE_TIMER
-            for enemy in range(10):
+            for enemy in range(ENEMY_COUNT):
                 enemy = Enemy(randint(0, SCREEN_WIDTH), randint(-200, -20), ENEMY_RADIUS, player, (updateable, drawable, enemies))
 
     shot_cooldown -= dt
@@ -79,7 +80,11 @@ while running:
                     print("Game Over!")
                     running = False
                     break
-                    
+
+    if enemy_waves == 0 and len(enemies) == 0:
+        print("You win!")
+        running = False
+        break      
 
     screen.fill('black')
 
