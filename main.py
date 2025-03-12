@@ -3,15 +3,14 @@ from constants import *
 from shapes import *
 from random import randint
 
-
-
-#def main():
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 dt = 0
 shot_direction = pygame.Vector2(1,0)
 shot_cooldown = PLAYER_SHOT_COOLDOWN
+enemy_waves = 6
+wave_timer = ENEMY_WAVE_TIMER
 distance_to_enemies = {}
 
 font = pygame.font.Font(None, 60)
@@ -30,6 +29,7 @@ bullets = pygame.sprite.Group()
 player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, PLAYER_RADIUS, (updateable, drawable))
 for enemy in range(10):
     enemy = Enemy(randint(0, SCREEN_WIDTH), randint(-200, -20), ENEMY_RADIUS, player, (updateable, drawable, enemies))
+enemy_waves -= 1
 
 running = True
 #game loop
@@ -41,7 +41,15 @@ while running:
     for obj in updateable:
         obj.update(dt)
 
-    shot_cooldown -= 1 * dt
+    if enemy_waves > 0:
+        wave_timer -= dt
+        if wave_timer <= 0:
+            enemy_waves -= 1
+            wave_timer = ENEMY_WAVE_TIMER
+            for enemy in range(10):
+                enemy = Enemy(randint(0, SCREEN_WIDTH), randint(-200, -20), ENEMY_RADIUS, player, (updateable, drawable, enemies))
+
+    shot_cooldown -= dt
     if shot_cooldown <= 0 and enemies:
         #find distances to all enemies
         distance_to_enemies.clear()
