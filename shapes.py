@@ -30,9 +30,15 @@ class Player(Shape):
         self.radius = radius
         self.speed = PLAYER_SPEED
         self.cooldown = PLAYER_SHOT_COOLDOWN
+        self.health = PLAYER_HEALTH
+        self.vulnerable = True
+        self.invulnerability = PLAYER_INVULNERABILITY
 
     def draw(self, screen):
         pygame.draw.circle(screen, "white", (self.position.x, self.position.y), self.radius, 2)
+        #draw healthbar
+        pygame.draw.rect(screen, "red", (self.position.x-20, self.position.y+20, 40, 5))
+        pygame.draw.rect(screen, "green", (self.position.x-20, self.position.y+20, 40/PLAYER_HEALTH*self.health, 5))
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -52,7 +58,24 @@ class Player(Shape):
         if self.position.y > SCREEN_HEIGHT:
             self.position.y = SCREEN_HEIGHT
 
+    def damage(self):
+        if self.vulnerable:
+            self.vulnerable = False
+            self.invulnerability= PLAYER_INVULNERABILITY
+            self.health -= 1
+
+        if self.health <= 0:
+            self.kill()
+
+    def invulnerability_countdown(self, dt):
+        if self.invulnerability > 0:
+            self.invulnerability -= 1 
+        if self.invulnerability <= 0:
+            self.vulnerable = True  
+
     def update(self, dt):
+        if not self.vulnerable:
+            self.invulnerability_countdown(dt)
         self.input()
         self.move(dt)
 

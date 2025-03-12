@@ -61,6 +61,17 @@ while running:
                 if bullet.collides(enemy):
                     bullet.kill()
                     enemy.kill()
+                    break
+
+    if enemies:
+        for enemy in enemies:
+            if enemy.collides(player):
+                player.damage()
+                if player.health <= 0:
+                    print("Game Over!")
+                    running = False
+                    break
+                    
 
     screen.fill('black')
 
@@ -72,8 +83,3 @@ while running:
     pygame.display.update()
 
     dt = clock.tick(60) / 1000
-
-
-
-if __name__ == "__main__":
-    main()
